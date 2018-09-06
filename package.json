@@ -1,0 +1,26 @@
+{
+  "name": "aws-lambda-binary-example",
+  "version": "1.0.0",
+  "description": "AWS Lambda API Gateway Binary example",
+  "main": "index.js",
+  "scripts": {
+    "lambdalocal:getImage": "./node_modules/lambda-local/bin/lambda-local -l index.js -h exampleImage -e test/event.lambdalocal.js -t 60",
+    "lambdalocal:getPdf": "./node_modules/lambda-local/bin/lambda-local -l index.js -h examplePdf -e test/event.lambdalocal.js -t 60"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dawshiek-yogathasar/aws-lambda-binary-example.git"
+  },
+  "author": "Dawshiek Yogathasar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dawshiek-yogathasar/aws-lambda-binary-example/issues"
+  },
+  "homepage": "https://github.com/dawshiek-yogathasar/aws-lambda-binary-example#readme",
+  "dependencies": {
+    "request": "^2.87.0"
+  },
+  "devDependencies": {
+    "lambda-local": "^1.5.1"
+  }
+}

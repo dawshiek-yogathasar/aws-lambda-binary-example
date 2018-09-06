@@ -1,0 +1,95 @@
+service: aws-lambda-binary-example
+
+custom:
+  cors:
+    origins:
+        - '*'
+    headers:
+        - Content-Type
+        - x-api-token
+        - X-Amz-Date
+        - Authorization
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - authorizationtoken
+    allowCredentials: false
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: ap-southeast-2
+  versionFunctions: false
+  stage: prod
+  memorySize: 128
+  stackTags:
+   owner: Dawshiek Yogathasar
+   project: aws-lambda-binary-example
+
+package:
+  individually: false
+  include:
+    - '**/*'
+
+functions:
+  aws-lambda-binary-example-image:
+    handler: index.exampleImage
+    role: lambdaRole
+    description: Example Lambda processing Image via API Gateway
+    warmup: true
+    timeout: 60
+    memorySize: 128
+    environment:
+      GET_EXAMPLE_IMAGE: "https://www.google.com.au/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
+    events:
+      - http:
+          method: get
+          path: /image
+          cors: ${self:custom.cors}
+  aws-lambda-binary-example-pdf:
+    handler: index.examplePdf
+    role: lambdaRole
+    description: Example Lambda processing PDF via API Gateway
+    warmup: true
+    timeout: 60
+    memorySize: 128
+    environment:
+      GET_EXAMPLE_PDF: "https://d1.awsstatic.com/whitepapers/architecture/AWS-Serverless-Applications-Lens.pdf"
+    events:
+      - http:
+          method: get
+          path: /pdf
+          cors: ${self:custom.cors}
+
+## Resources ##
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: aws-lambda-binary-example-api
+        BinaryMediaTypes:
+          - "*~1*"
+    lambdaRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /all/
+        ManagedPolicyArns: ["arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"] ## Allows VPC Execution rights for Lambda
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: LambdaIAMAll
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow # Default Lambda Persmissions for Cloudwatch Log Access
+                  Resource: arn:aws:logs:${self:provider.region}:*:log-group:/aws/lambda/*:*:*
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
